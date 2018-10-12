@@ -41,14 +41,24 @@ export default class App extends Component {
       };
     });
   };
+  onItemPressedHandler = index => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.filter((place, i) => {
+          return i !== index;
+        })
+      };
+    });
+  };
 
   render() {
     const placesOutput = this.state.places.map((place, i) => {
       return (
         <ListItem
-          key={i}
+          key={i.toString()}
           placeName={place}
-          onItemPressed={() => alert("item pressed! ID: " + i)}
+          index={i}
+          onItemPressed={this.onItemPressedHandler}
         />
       );
     });
@@ -56,7 +66,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Enter your name"
+            placeholder="Enter your task"
             value={this.state.placeName}
             onChangeText={this.placeNameChangedHandler}
             style={styles.placeInput}
@@ -80,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#F5FCFF"
+    backgroundColor: "white"
   },
   inputContainer: {
     // flex: 1,
