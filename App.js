@@ -13,7 +13,8 @@ import {
   Text,
   View,
   TextInput,
-  Button
+  Button,
+  ScrollView
 } from "react-native";
 
 import ListItem from "./src/components/ListItem/ListItem";
@@ -21,7 +22,7 @@ import ListItem from "./src/components/ListItem/ListItem";
 export default class App extends Component {
   state = {
     placeName: "",
-    places: []
+    places: [{ key: "1", text: "foo", isCompleted: false }]
   };
 
   placeNameChangedHandler = val => {
@@ -34,40 +35,67 @@ export default class App extends Component {
     if (this.state.placeName.trim() === "") {
       return;
     }
+
     this.setState(prevState => {
+      const todo = {
+        key: new Date().getTime(),
+        text: this.state.placeName,
+        isCompleted: false
+      };
+
       return {
-        places: prevState.places.concat(prevState.placeName),
+        places: prevState.places.concat(todo),
         placeName: ""
       };
     });
   };
-  onItemPressedHandler = index => {
+
+  onRemovePressHandler = key => {
     this.setState(prevState => {
       return {
-        places: prevState.places.filter((place, i) => {
-          return i !== index;
+        places: prevState.places.filter(place => {
+          return place.key !== key;
+        })
+      };
+    });
+  };
+
+  onTogglePressHandler = key => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.map(place => {
+          return place.key === key
+            ? {
+                key: place.key,
+                text: place.text,
+                isCompleted: !place.isCompleted
+              }
+            : place;
         })
       };
     });
   };
 
   render() {
-    const placesOutput = this.state.places.map((place, i) => {
+    const { placeName, places } = this.state;
+
+    const placesOutput = places.map(place => {
       return (
         <ListItem
-          key={i.toString()}
-          placeName={place}
-          index={i}
-          onItemPressed={this.onItemPressedHandler}
+          key={place.key}
+          place={place}
+          onRemovePress={this.onRemovePressHandler}
+          onTogglePress={this.onTogglePressHandler}
         />
       );
     });
+
     return (
       <View style={styles.container}>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Enter your task"
-            value={this.state.placeName}
+            value={placeName}
             onChangeText={this.placeNameChangedHandler}
             style={styles.placeInput}
           />
@@ -79,7 +107,7 @@ export default class App extends Component {
             style={styles.placeButton}
           />
         </View>
-        <View style={styles.listContainer}>{placesOutput}</View>
+        <ScrollView style={styles.listContainer}>{placesOutput}</ScrollView>
       </View>
     );
   }

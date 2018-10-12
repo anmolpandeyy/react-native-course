@@ -2,35 +2,20 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native";
 
 class ListItem extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isChanged: false
-    };
-  }
-  onItemPressedHandler = () => {
-    this.setState({
-      isChanged: !this.state.isChanged
-    });
-  };
   render() {
+    const {
+      onRemovePress,
+      onTogglePress,
+      place: { key, isCompleted, text }
+    } = this.props;
+
     return (
-      <TouchableOpacity onPress={this.onItemPressedHandler}>
-        <View
-          style={
-            this.state.isChanged ? styles.afterClicked : styles.beforeClicked
-          }
-        >
-          <Text
-            style={this.state.isChanged ? styles.afterText : styles.beforeText}
-          >
-            {this.props.placeName}
+      <TouchableOpacity onPress={() => onTogglePress(key)}>
+        <View style={isCompleted ? styles.afterClicked : styles.beforeClicked}>
+          <Text style={isCompleted ? styles.afterText : styles.beforeText}>
+            {text}
           </Text>
-          <Button
-            color={"red"}
-            title="X"
-            onPress={() => this.props.onItemPressed(this.props.index)}
-          />
+          <Button color={"red"} title="X" onPress={() => onRemovePress(key)} />
         </View>
       </TouchableOpacity>
     );
